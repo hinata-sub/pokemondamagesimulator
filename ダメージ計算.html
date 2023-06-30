@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ポケモン ダメージ計算</title>
+  <style>
+    /* CSS スタイル */
+    .container {
+      width: 400px;
+      margin: 0 auto;
+    }
+    
+    .input-group {
+      margin-bottom: 10px;
+    }
+    
+    .result {
+      margin-top: 20px;
+    }
+  </style>
+  <script>
+    // JavaScript コード
+    function calculateDamage() {
+      // 攻撃側パラメータ
+      var attackBase = parseInt(document.getElementById("attackBase").value);
+      var attackEV = parseInt(document.getElementById("attackEV").value);
+      var attackIV = parseInt(document.getElementById("attackIV").value);
+      var attackLevel = parseInt(document.getElementById("attackLevel").value);
+      var attackRank = parseInt(document.getElementById("attackRank").value);
+      var movePower = parseInt(document.getElementById("movePower").value);
+      var isSameType = document.getElementById("isSameType").checked;
+      var isCritical = document.getElementById("isCritical").checked;
+
+      // 防御側パラメータ
+      var defenseBase = parseInt(document.getElementById("defenseBase").value);
+      var defenseEV = parseInt(document.getElementById("defenseEV").value);
+      var defenseIV = parseInt(document.getElementById("defenseIV").value);
+      var defenseLevel = parseInt(document.getElementById("defenseLevel").value);
+      var defenseRank = parseInt(document.getElementById("defenseRank").value);
+      var typeEffectiveness = parseFloat(document.getElementById("typeEffectiveness").value);
+      var hpBase = parseInt(document.getElementById("hpBase").value);
+      var hpEV = parseInt(document.getElementById("hpEV").value);
+      var hpIV = parseInt(document.getElementById("hpIV").value);
+
+      // 計算式に基づくダメージ計算
+      var attack = Math.floor((Math.floor((2 * attackBase + attackIV + Math.floor(attackEV / 4)) * attackLevel / 100) + 5) * (1 + (attackRank > 0 ? (attackRank * 0.5) : (attackRank * 0.4))));
+      var defense = Math.floor((Math.floor((2 * defenseBase + defenseIV + Math.floor(defenseEV / 4)) * defenseLevel / 100) + 5) * (1 + (defenseRank > 0 ? (defenseRank * 0.5) : (defenseRank * 0.4))));
+      var baseDamage = Math.floor(Math.floor(Math.floor((2 * attackLevel / 5 + 2) * movePower * attack / defense) / 50) + 2);
+      var modifier = isSameType ? 1.5 : 1;
+      var damage = Math.floor(baseDamage * modifier * typeEffectiveness * (isCritical ? 1.5 : 1));
+
+      // HPの計算
+      var hp = Math.floor((Math.floor((2 * hpBase + hpIV + Math.floor(hpEV / 4)) * 100 / 100) + 100) + 10);
+      var newHP = hp - damage;
+
+      // 結果の表示
+      document.getElementById("attackStat").textContent = attack;
+      document.getElementById("defenseStat").textContent = defense;
+      document.getElementById("hpStat").textContent = hp;
+      document.getElementById("damageResult").textContent = damage;
+      document.getElementById("newHP").textContent = newHP;
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>ポケモン ダメージ計算</h1>
+    <div class="input-group">
+      <label>攻撃側</label><br>
+      種族値: <input type="number" id="attackBase" min="1" required><br>
+      努力値: <input type="number" id="attackEV" min="0" required><br>
+      個体値: <input type="number" id="attackIV" min="0" required><br>
+      レベル: <input type="number" id="attackLevel" min="1" required><br>
+      能力ランク: <input type="number" id="attackRank" min="-6" max="6" required><br>
+      技威力: <input type="number" id="movePower" min="1" required><br>
+      一致タイプ: <input type="checkbox" id="isSameType"><br>
+      急所: <input type="checkbox" id="isCritical"><br>
+    </div>
+    <div class="input-group">
+      <label>防御側</label><br>
+      種族値: <input type="number" id="defenseBase" min="1" required><br>
+      努力値: <input type="number" id="defenseEV" min="0" required><br>
+      個体値: <input type="number" id="defenseIV" min="0" required><br>
+      レベル: <input type="number" id="defenseLevel" min="1" required><br>
+      能力ランク: <input type="number" id="defenseRank" min="-6" max="6" required><br>
+      タイプ相性: <input type="number" id="typeEffectiveness" min="0" step="0.25" required><br>
+      HP種族値: <input type="number" id="hpBase" min="1" required><br>
+      HP努力値: <input type="number" id="hpEV" min="0" required><br>
+      HP個体値: <input type="number" id="hpIV" min="0" required><br>
+    </div>
+    <button onclick="calculateDamage()">計算</button>
+    <div class="result">
+      <h3>実数値</h3>
+      <p>攻撃実数値: <span id="attackStat"></span></p>
+      <p>防御実数値: <span id="defenseStat"></span></p>
+      <p>HP実数値: <span id="hpStat"></span></p>
+      <h3>計算結果</h3>
+      <p>ダメージ: <span id="damageResult"></span></p>
+      <p>残りHP: <span id="newHP"></span></p>
+    </div>
+  </div>
+</body>
+</html>
